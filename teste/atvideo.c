@@ -1,22 +1,10 @@
-#include "atvideo4l.h"
+#include "atvideo.h"
 
-void abrirDispositivo(nome, DispositivoV4L* dispositivo)
+void iniciarVideoCodec()
 {
-	
+    avcodec_register_all();
 }
-void iniciarDispositivo(DispositivoV4L* dispositivo)
-{
-	
-}
-void iniciarCaptura(DispositivoV4L* dispositivo)
-{
-	
-}
-void terminarDispositivo(DispositivoV4L* dispositivo)
-{
-	
-}
-void desligarDispositivo(DispositivoV4L* dispositivo)
-{
 
+void lerVideo(ATVideo* video)
+{
 }

@@ -10,7 +10,7 @@ static int xioctl(int fh, int request, void *arg)
 }
 
 
-int abrirDispositivo(DispositivoV4L* dispositivo)
+int abrirDispositivo(ATDispositivoV4L* dispositivo)
 {
 	struct stat st;
 	// Tentar identificar o dispositivo
@@ -38,7 +38,7 @@ int abrirDispositivo(DispositivoV4L* dispositivo)
 	}
 	return 0;
 }
-int iniciarDispositivo(DispositivoV4L* dispositivo)
+int iniciarDispositivo(ATDispositivoV4L* dispositivo)
 {
 	struct v4l2_capability cap;
 	struct v4l2_cropcap cropcap;
@@ -89,26 +89,26 @@ int iniciarDispositivo(DispositivoV4L* dispositivo)
 
 	return 0;
 }
-void iniciarCaptura(DispositivoV4L* dispositivo)
+void iniciarCaptura(ATDispositivoV4L* dispositivo)
 {
-	
+
 }
-void terminarDispositivo(DispositivoV4L* dispositivo)
+void terminarDispositivo(ATDispositivoV4L* dispositivo)
 {
-	
+
 }
-void desligarDispositivo(DispositivoV4L* dispositivo)
+void desligarDispositivo(ATDispositivoV4L* dispositivo)
 {
 
 }
 
-void capturarQuadro(DispositivoV4L* dispositivo)
+void capturarQuadro(ATDispositivoV4L* dispositivo)
 {
 
 }
 
 // Ir para um tempo
-void irPara(DispositivoV4L* dispositivo, /* tempo */)
-{
+// void irPara(DispositivoV4L* dispositivo, /* tempo */)
+// {
 
-}
+// }

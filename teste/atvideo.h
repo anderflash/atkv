@@ -1,22 +1,29 @@
-#ifndef ATCAMERA_H
-#define ATCAMERA_H
+#ifndef ATVIDEO_H
+#define ATVIDEO_H
+#include <libavcodec/avcodec.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// Estrutura do vídeo
 
-typedef struct Camera
-{
-	char *caminho;
-	int largura;
-	int altura;
 
-}Camera;
+// Iniciar Biblioteca
+/** \brief Iniciar Biblioteca de Codec de Vídeo
+ * Iniciar Biblioteca de Codec de Vídeo
+ * \param
+ * \param
+ * \return
+ *
+ */
+void iniciarVideoCodec();
 
-void abrirDispositivo(nome, Camera* camera);
-void iniciarDispositivo(Camera* camera);
-void iniciarCaptura(Camera* camera);
-void terminarDispositivo(Camera* camera);
-void desligarDispositivo(Camera* camera);
+// Ler Vídeo
 
-#endif
+
+// Obter Quadro
+
+
+// Escrever Vídeo
+
+
+// Fechar Vídeo
+
+#endif // ATVIDEO_H

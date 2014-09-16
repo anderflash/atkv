@@ -4,6 +4,9 @@
 #include <stdio.h>
 #include <jpeglib.h>
 #include <setjmp.h>
+#include <stdlib.h>
+
+typedef enum{AT_RGB, AT_RGBA, AT_BGR, AT_YUV, AT_YCBCR, AT_YUYV, AT_BGRA, AT_GRAYSCALE, AT_CMYK, AT_YCCK} FormatoPixel;
 
 struct my_error_mgr {
 struct jpeg_error_mgr pub;	/* "public" fields */
@@ -11,14 +14,15 @@ jmp_buf setjmp_buffer;	/* for return to caller */
 };
 typedef struct my_error_mgr * my_error_ptr;
 
-typedef struct ImagemJPEG
+typedef struct ATImagemJPEG
 {
+    char* nome;
 	int largura;
 	int altura;
 	int canais;
-	int formato;
-	JSAMPARRAY buffer;
-}ImagemJPEG;
+	FormatoPixel formato;
+	unsigned char* buffer;
+}ATImagemJPEG;
 
 /** Estrutura simples de imagem
  * - Dados
@@ -61,9 +65,11 @@ typedef struct ImagemJPEG
 
 /* IO JPEG */
 /** ler imagem JPEG */
-int lerJPEG(const char* nome, ImagemJPEG* imagem);
+int lerJPEG(ATImagemJPEG* imagem);
 /** escrever imagem em JPEG */
-//void escreverJPEG(const char* nome, void *);
+int escreverJPEG(const char* saida, ATImagemJPEG* imagem, int qualidade);
+/** destruir o buffer da imagem JPEG */
+void destruirImagem(ATImagemJPEG* imagem);
 
 // // IO BITMAP
 // void lerBITMAP();

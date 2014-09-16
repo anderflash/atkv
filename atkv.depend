@@ -1,0 +1,26 @@
+# depslib dependency file v1.0
+1410893921 source:/home/acmt/Documentos/git/atkv/teste/atmidia.c
+	"atmidia.h"
+
+1410893921 /home/acmt/Documentos/git/atkv/teste/atmidia.h
+	<stdio.h>
+	<jpeglib.h>
+	<setjmp.h>
+	<stdlib.h>
+
+1410887825 source:/home/acmt/Documentos/git/atkv/teste/atvideo4l.c
+	"atvideo4l.h"
+
+1410871702 /home/acmt/Documentos/git/atkv/teste/atvideo4l.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<errno.h>
+	<sys/stat.h>
+	<fcntl.h>
+	<sys/ioctl.h>
+	<linux/videodev2.h>
+
+1410893647 source:/home/acmt/Documentos/git/atkv/teste/exemplomidia.c
+	"atmidia.h"
+
