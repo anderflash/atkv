@@ -70,7 +70,6 @@ TEST(Imagem, testImagem_JPEG_Abrir_Invalido)
 }
 TEST(Imagem, testImagem_JPEG_Abrir_Valido)
 {
-  TEST_IGNORE();
   int erroCorreto = 1;
   int largura = 64;
   int altura = 64;
