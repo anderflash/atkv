@@ -44,7 +44,11 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="include/atimagem.h" />
+		<Unit filename="include/atvideo.h" />
 		<Unit filename="src/atimagem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/atvideo.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="unity/Makefile" />

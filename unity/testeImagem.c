@@ -199,7 +199,7 @@ TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Vazio)
 
   try
   {
-    converterImagem(imagem2, AT_GRAYSCALE);
+    converterImagem(imagem2, imagem2);
   }
   catch(ATImagemNulaException)
   {
@@ -214,7 +214,7 @@ TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Vazio)
   try
   {
     // Converter o objeto sem carregar antes
-    converterImagem((ATImagem*) imagem, AT_GRAYSCALE);
+    converterImagem((ATImagem*) imagem, (ATImagem*)imagem);
   }
   catch(ATImagemConverterException)
   {
@@ -230,7 +230,7 @@ TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Vazio)
   imagem->super.altura = 1;
   try
   {
-    converterImagem((ATImagem*) imagem, AT_GRAYSCALE);
+    converterImagem((ATImagem*) imagem,(ATImagem*) imagem);
   }
   catch(ATImagemConverterException)
   {
@@ -241,10 +241,20 @@ TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Vazio)
 }
 TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Correto)
 {
+  TEST_IGNORE();
   // Converter de CMYK para Grayscale
+//  ATImagemJPEG* imagemEntrada = (ATImagemJPEG*) criarImagem("cmyk.jpg"   , AT_JPEG);
+//  imagemEntrada->super.formato = AT_CMYK;
+//  ATImagemJPEG* imagemSaida = (ATImagemJPEG*) criarImagem("grayscale.jpg", AT_JPEG);
+//  imagemSaida->super.formato = AT_GRAYSCALE;
+//
+//  lerImagem((ATImagem*)imagemEntrada);
+//  converterImagem((ATImagem*)imagemEntrada, (ATImagem*)imagemSaida);
+
+
   // Converter de RGB para Grayscale
   // Converter de YCbCr para Grayscale
-  TEST_IGNORE();
+
 }
 
 TEST(Imagem, testImagem_JPEG_Converter_Cores_Correto)
@@ -339,11 +349,59 @@ TEST(Imagem, testImagem_JPEG_Convolucao_Correto)
 // Testes para PNG
 TEST(Imagem, testImagem_PNG_Abrir_Vazio)
 {
-  TEST_IGNORE();
+  int erroCorreto = 0;
+  // Criar a imagem
+  ATImagemPNG *imagempng;
+
+  // Tentar ler uma imagem vazia
+  try
+  {
+    imagempng = (ATImagemPNG*) criarImagem("naoexiste.png", AT_PNG);
+    lerImagem((ATImagem*) imagempng);
+  }
+  // Capturar o erro (testar aqui se o erro é correto)
+  catch(ATImagemNaoExisteException)
+  {
+    erroCorreto = 1;
+  }
+  catch(BadPointerException)
+  {
+    erroCorreto = 2;
+  }
+
+  TEST_ASSERT_EQUAL(1, erroCorreto);
+
+  // Testar se a largura, altura e número de canais continuam sendo 0
+  TEST_ASSERT_EQUAL(0, imagempng->super.altura);
+  TEST_ASSERT_EQUAL(0, imagempng->super.largura);
+  TEST_ASSERT_EQUAL(0, imagempng->super.componentes);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagempng->super.formato);
+  TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
+
+  destruirImagem((ATImagem*) imagempng);
 }
 TEST(Imagem, testImagem_PNG_Abrir_Invalido)
 {
-  TEST_IGNORE();
+  int erroCorreto = 0;
+  ATImagemPNG *imagempng = (ATImagemPNG*) criarImagem("outroobjeto.dat", AT_PNG);
+
+  try
+  {
+    lerImagem((ATImagem*) imagempng);
+  }
+  catch(ATImagemInvalidaException)
+  {
+    erroCorreto = 1;
+  }
+  TEST_ASSERT_EQUAL(1, erroCorreto);
+  // Testar se a largura, altura e número de canais continuam sendo 0
+  TEST_ASSERT_EQUAL(0, imagempng->super.altura);
+  TEST_ASSERT_EQUAL(0, imagempng->super.largura);
+  TEST_ASSERT_EQUAL(0, imagempng->super.componentes);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagempng->super.formato);
+  TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
+
+  destruirImagem((ATImagem*) imagempng);
 }
 TEST(Imagem, testImagem_PNG_Abrir_Valido)
 {
@@ -457,6 +515,36 @@ TEST(Imagem, testImagem_PNG_Convolucao_Correto)
 TEST(Imagem, testImagem_TIFF_Abrir_Vazio)
 {
   TEST_IGNORE();
+  int erroCorreto = 0;
+  // Criar a imagem
+  ATImagemTIFF *imagemtiff;
+
+  // Tentar ler uma imagem vazia
+  try
+  {
+    imagemtiff = (ATImagemTIFF*) criarImagem("naoexiste.tiff", AT_TIFF);
+    lerImagem((ATImagem*) imagemtiff);
+  }
+  // Capturar o erro (testar aqui se o erro é correto)
+  catch(ATImagemNaoExisteException)
+  {
+    erroCorreto = 1;
+  }
+  catch(BadPointerException)
+  {
+    erroCorreto = 0;
+  }
+
+  TEST_ASSERT_EQUAL(1, erroCorreto);
+
+  // Testar se a largura, altura e número de canais continuam sendo 0
+  TEST_ASSERT_EQUAL(0, imagemtiff->super.altura);
+  TEST_ASSERT_EQUAL(0, imagemtiff->super.largura);
+  TEST_ASSERT_EQUAL(0, imagemtiff->super.componentes);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagemtiff->super.formato);
+  TEST_ASSERT_EQUAL(AT_JPEG, imagemtiff->super.tipo);
+
+  destruirImagem((ATImagem*) imagemtiff);
 }
 TEST(Imagem, testImagem_TIFF_Abrir_Invalido)
 {

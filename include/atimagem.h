@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <setjmp.h>
 #include <jpeglib.h>
+#include <png.h>
 
 METHODDEF(void)
 my_error_exit (j_common_ptr cinfo);
@@ -45,15 +46,33 @@ typedef struct
     ATImagem super;
 }ATImagemJPEG;
 
+typedef struct
+{
+    ATImagem super;
+}ATImagemPNG;
+
+typedef struct
+{
+    ATImagem super;
+}ATImagemTIFF;
+
 ATImagem* criarImagem(const char* nome, ATImagemTipo tipo);
 void lerImagem(ATImagem* imagem);
 void escreverImagem(ATImagem* imagem);
 void destruirImagem(ATImagem* imagem);
-void converterImagem(ATImagem* imagem, ATImagemFormato formato);
+void converterImagem(ATImagem* imagemEntrada, ATImagem* imagemSaida);
 
 // FUNÇÕES JPEG
 void lerImagemJPEG(ATImagemJPEG* imagem);
 void escreverImagemJPEG(ATImagemJPEG* imagem);
-void converterImagemJPEG(ATImagemJPEG* imagem, ATImagemFormato formato);
+void converterImagemJPEG(ATImagemJPEG* imagemEntrada, ATImagemJPEG* imagemSaida);
+
+// FUNÇÕES PNG
+void lerImagemPNG(ATImagemPNG* imagem);
+void escreverImagemPNG(ATImagemPNG* imagem);
+
+// FUNÇÕES TIFF
+void lerImagemTIFF(ATImagemTIFF* imagem);
+void escreverImagemTIFF(ATImagemTIFF* imagem);
 
 #endif // ATIMAGEM_H

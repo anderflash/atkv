@@ -26,7 +26,10 @@ ATImagem* criarImagem(const char* nome, ATImagemTipo tipo)
     switch(tipo)
     {
         case AT_JPEG: imagem = (ATImagem*) malloc(sizeof(ATImagemJPEG)); break;
+        case AT_TIFF: imagem = (ATImagem*) malloc(sizeof(ATImagemTIFF)); break;
+        case AT_PNG: imagem = (ATImagem*) malloc(sizeof(ATImagemPNG)); break;
     }
+    imagem->tipo = tipo;
     imagem->nome = (char*)nome;
     imagem->altura = 0;
     imagem->largura = 0;
@@ -39,9 +42,11 @@ ATImagem* criarImagem(const char* nome, ATImagemTipo tipo)
 void lerImagem(ATImagem* imagem)
 {
     if(imagem == NULL) throw(ATImagemNulaException, "Objeto vazio");
+
     switch(imagem->tipo)
     {
-        case AT_JPEG: lerImagemJPEG((ATImagemJPEG*)imagem);
+        case AT_JPEG: lerImagemJPEG((ATImagemJPEG*)imagem);break;
+        case AT_PNG: lerImagemPNG((ATImagemPNG*)imagem);break;
     }
 }
 
@@ -54,12 +59,13 @@ void escreverImagem(ATImagem* imagem)
   }
 }
 
-void converterImagem(ATImagem* imagem, ATImagemFormato formato)
+void converterImagem(ATImagem* imagemEntrada, ATImagem* imagemSaida)
 {
-  if(imagem == NULL) throw(ATImagemNulaException, "Objeto vazio");
-  switch(imagem->tipo)
+  if(imagemEntrada == NULL) throw(ATImagemNulaException, "Objeto vazio");
+  if(imagemSaida == NULL) throw(ATImagemNulaException, "Objeto vazio");
+  switch(imagemEntrada->tipo)
   {
-    case AT_JPEG: converterImagemJPEG((ATImagemJPEG*)imagem, formato);
+    case AT_JPEG: converterImagemJPEG((ATImagemJPEG*)imagemEntrada, (ATImagemJPEG*)imagemSaida);
   }
 }
 
@@ -192,11 +198,136 @@ void escreverImagemJPEG(ATImagemJPEG* imagem)
   jpeg_destroy_compress(&cinfo);  // Limpar o cinfo (muita memória)
 }
 
-void converterImagemJPEG(ATImagemJPEG* imagem, ATImagemFormato formato)
+void converterImagemJPEG(ATImagemJPEG* imagemEntrada, ATImagemJPEG* imagemSaida)
 {
-  if(imagem == NULL) throw(ATImagemNulaException, "Objeto vazio");
-  if(imagem->super.componentes == 0 ||
-     imagem->super.largura == 0 ||
-     imagem->super.altura == 0) throw(ATImagemConverterException, "Não pode converter uma imagem vazia.");
-  if(imagem->super.formato == AT_GRAYSCALE) throw(ATImagemConverterException, "Não pode converter grayscale em outro espaço de cores.");
+  if(imagemEntrada == NULL) throw(ATImagemNulaException, "Objeto vazio");
+  if(imagemSaida == NULL) throw(ATImagemNulaException, "Objeto vazio");
+  if(imagemEntrada->super.componentes == 0 ||
+     imagemEntrada->super.largura == 0 ||
+     imagemEntrada->super.altura == 0) throw(ATImagemConverterException, "Não pode converter uma imagem vazia.");
+  if(imagemEntrada->super.formato == AT_GRAYSCALE) throw(ATImagemConverterException, "Não pode converter grayscale em outro espaço de cores.");
+}
+
+void lerImagemPNG(ATImagemPNG* imagem)
+{
+  char header[8];    // 8 is the maximum size that can be checked
+
+  /* open file and test for it being a png */
+  FILE *fp = fopen(imagem->super.nome, "rb");
+  if (!fp) throw(ATImagemNaoExisteException, "A imagem não existe");
+  fread(header, 1, 8, fp);
+  if (png_sig_cmp(header, 0, 8))
+    throw(ATImagemInvalidaException, "Não é uma imagem válida");
+
+
+  /* initialize stuff */
+  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+  if (!png_ptr)
+    throw(RuntimeException, "[read_png_file] png_create_read_struct failed");
+
+  info_ptr = png_create_info_struct(png_ptr);
+  if (!info_ptr)
+    throw(RuntimeException, "[read_png_file] png_create_info_struct failed");
+
+  if (setjmp(png_jmpbuf(png_ptr)))
+    throw(RuntimeException, "[read_png_file] Error during init_io");
+
+  png_init_io(png_ptr, fp);
+  png_set_sig_bytes(png_ptr, 8);
+
+  png_read_info(png_ptr, info_ptr);
+
+  imagem->super.largura = png_get_image_width(png_ptr, info_ptr);
+  imagem->super.altura = png_get_image_height(png_ptr, info_ptr);
+
+  png_byte color_type = png_get_color_type(png_ptr, info_ptr);
+  switch(color_type)
+  {
+    case PNG_COLOR_TYPE_RGB:break;
+  }
+  bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+
+  number_of_passes = png_set_interlace_handling(png_ptr);
+  png_read_update_info(png_ptr, info_ptr);
+
+
+  /* read file */
+  if (setjmp(png_jmpbuf(png_ptr)))
+          abort_("[read_png_file] Error during read_image");
+
+  row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
+  for (y=0; y<height; y++)
+          row_pointers[y] = (png_byte*) malloc(png_get_rowbytes(png_ptr,info_ptr));
+
+  png_read_image(png_ptr, row_pointers);
+
+  fclose(fp);
+
+}
+
+void escreverImagemPNG(ATImagemPNG* imagem)
+{
+  /* create file */
+  FILE *fp = fopen(file_name, "wb");
+  if (!fp)
+    abort_("[write_png_file] File %s could not be opened for writing", file_name);
+
+
+  /* initialize stuff */
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+  if (!png_ptr)
+    abort_("[write_png_file] png_create_write_struct failed");
+
+  info_ptr = png_create_info_struct(png_ptr);
+  if (!info_ptr)
+    abort_("[write_png_file] png_create_info_struct failed");
+
+  if (setjmp(png_jmpbuf(png_ptr)))
+    abort_("[write_png_file] Error during init_io");
+
+  png_init_io(png_ptr, fp);
+
+
+  /* write header */
+  if (setjmp(png_jmpbuf(png_ptr)))
+    abort_("[write_png_file] Error during writing header");
+
+  png_set_IHDR(png_ptr, info_ptr, width, height,
+               bit_depth, color_type, PNG_INTERLACE_NONE,
+               PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+  png_write_info(png_ptr, info_ptr);
+
+
+  /* write bytes */
+  if (setjmp(png_jmpbuf(png_ptr)))
+    abort_("[write_png_file] Error during writing bytes");
+
+  png_write_image(png_ptr, row_pointers);
+
+
+  /* end write */
+  if (setjmp(png_jmpbuf(png_ptr)))
+    abort_("[write_png_file] Error during end of write");
+
+  png_write_end(png_ptr, NULL);
+
+  /* cleanup heap allocation */
+  for (y=0; y<height; y++)
+          free(row_pointers[y]);
+  free(row_pointers);
+
+  fclose(fp);
+}
+
+void lerImagemTIFF(ATImagemTIFF* imagem)
+{
+
+}
+
+void escreverImagemTIFF(ATImagemTIFF* imagem)
+{
+
 }
