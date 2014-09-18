@@ -1,0 +1,4 @@
+testImagem: testImagem.c
+	gcc testImagem.c -g -o testImagem -I../include ../src/atimagem.c -I../lib -L../lib/ -lunity
+clean: 
+	rm testImagem
