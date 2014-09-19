@@ -34,7 +34,7 @@ SRC_FILES1=\
   #test/test_runners/all_tests.c
 INC_DIRS=-I../include -I../lib
 LIB_DIRS=-L../lib
-LIBRARIES=-lunity -lunityfixture -le4c -ljpeg -lpng -lavcodec
+LIBRARIES=-lunity -lunityfixture -le4c -ljpeg -lpng -lavcodec -lavformat -lavutil
 
 SYMBOLS=-std=c11
 

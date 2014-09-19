@@ -11,9 +11,12 @@
 
 E4C_DECLARE_EXCEPTION(ATVideoException);
 E4C_DECLARE_EXCEPTION(ATVideoNaoExisteException);
+E4C_DECLARE_EXCEPTION(ATVideoFormatoException);
+E4C_DECLARE_EXCEPTION(ATVideoCodecException);
 E4C_DECLARE_EXCEPTION(ATVideoAbrirNaoExisteException);
 E4C_DECLARE_EXCEPTION(ATVideoInvalidoException);
 E4C_DECLARE_EXCEPTION(ATVideoAbrirInvalidoException);
+E4C_DECLARE_EXCEPTION(ATVideoObterFrameException);
 
 typedef enum{AT_YUV, AT_RGB, AT_GRAYSCALE} ATVideoFormato;
 typedef enum{AT_MPEG, AT_AVI, AT_MOV, AT_FLV, AT_MP4} ATVideoTipo;
@@ -38,3 +41,4 @@ void fecharVideo(ATVideo* video);
 void destruirVideo(ATVideo* video);
 
 #endif // ATVIDEO_H
+

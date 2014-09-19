@@ -19,7 +19,7 @@ TEST_TEAR_DOWN(Video)
 TEST(Video, testVideo_Abrir_Vazio)
 {
   int erro = 0;
-  ATVideo* video = criarVideo("vazio.mpeg", AT_MPEG);
+  ATVideo* video = criarVideo("vazio.avi", AT_AVI);
   try
   {
     abrirVideo(video);
@@ -51,6 +51,14 @@ TEST(Video, testVideo_Abrir_Invalido)
   {
     erro = 1;
   }
+  catch(ATVideoFormatoException)
+  {
+    erro = 1;
+  }
+  catch(ATVideoCodecException)
+  {
+    erro = 1;
+  }
   catch(RuntimeException)
   {
     erro = 2;
@@ -65,21 +73,21 @@ TEST(Video, testVideo_Abrir_Invalido)
 TEST(Video, testVideo_Abrir_Valido)
 {
   int erro = 0;
-  ATVideo* video = criarVideo("video.mpg", AT_MPEG);
+  ATVideo* video = criarVideo("videos/video.mpg", AT_MPEG);
   try
   {
     abrirVideo(video);
+    TEST_ASSERT_EQUAL(320, video->largura);
+    TEST_ASSERT_EQUAL(240, video->altura);
+    TEST_ASSERT_EQUAL(3, video->canais);
+    TEST_ASSERT_EQUAL(AT_YUV, video->formato);
+    TEST_ASSERT_EQUAL(AT_MPEG, video->tipo);
   }
   catch(RuntimeException)
   {
     erro = 1;
   }
   TEST_ASSERT_EQUAL(0, erro);
-  TEST_ASSERT_EQUAL(320, video->largura);
-  TEST_ASSERT_EQUAL(240, video->altura);
-  TEST_ASSERT_EQUAL(3, video->canais);
-  TEST_ASSERT_EQUAL(AT_YUV, video->formato);
-  TEST_ASSERT_EQUAL(AT_MPEG, video->tipo);
   if(videoEstaAberto(video))
   {
     fecharVideo(video);
