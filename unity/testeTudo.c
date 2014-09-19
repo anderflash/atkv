@@ -2,9 +2,9 @@
 
 static void TodosTestes(void)
 {
-    RUN_TEST_GROUP(Imagem);
+    //RUN_TEST_GROUP(Imagem);
     RUN_TEST_GROUP(Video);
-    RUN_TEST_GROUP(Camera);
+    //RUN_TEST_GROUP(Camera);
 }
 
 int main(int argc, char**argv)

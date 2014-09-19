@@ -20,7 +20,7 @@ E4C_DECLARE_EXCEPTION(ATImagemEscreverVazioException);
 E4C_DECLARE_EXCEPTION(ATImagemConverterException);
 E4C_DECLARE_EXCEPTION(ATImagemNulaException);
 
-typedef enum{AT_CMYK, AT_RGB, AT_YCBCR, AT_YUV, AT_GRAYSCALE} ATImagemFormato;
+typedef enum{AT_CMYK, AT_RGB, AT_RGBA, AT_YCBCR, AT_YUV, AT_GRAYSCALE, AT_GRAYSCALE_ALPHA, AT_ALPHA} ATImagemFormato;
 typedef enum{AT_JPEG, AT_PNG, AT_TIFF} ATImagemTipo;
 
 // PARA O LIBJPEG
@@ -49,6 +49,8 @@ typedef struct
 typedef struct
 {
     ATImagem super;
+    png_byte bit_depth;
+    png_byte color_type;
 }ATImagemPNG;
 
 typedef struct

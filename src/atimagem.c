@@ -56,6 +56,7 @@ void escreverImagem(ATImagem* imagem)
   switch(imagem->tipo)
   {
     case AT_JPEG: escreverImagemJPEG((ATImagemJPEG*)imagem);
+    case AT_PNG: escreverImagemPNG((ATImagemPNG*)imagem);
   }
 }
 
@@ -221,12 +222,12 @@ void lerImagemPNG(ATImagemPNG* imagem)
 
 
   /* initialize stuff */
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
   if (!png_ptr)
     throw(RuntimeException, "[read_png_file] png_create_read_struct failed");
 
-  info_ptr = png_create_info_struct(png_ptr);
+  png_infop info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr)
     throw(RuntimeException, "[read_png_file] png_create_info_struct failed");
 
@@ -238,64 +239,88 @@ void lerImagemPNG(ATImagemPNG* imagem)
 
   png_read_info(png_ptr, info_ptr);
 
+  png_set_scale_16(png_ptr);
+
   imagem->super.largura = png_get_image_width(png_ptr, info_ptr);
   imagem->super.altura = png_get_image_height(png_ptr, info_ptr);
 
-  png_byte color_type = png_get_color_type(png_ptr, info_ptr);
-  switch(color_type)
+  imagem->color_type = png_get_color_type(png_ptr, info_ptr);
+  switch(imagem->color_type)
   {
-    case PNG_COLOR_TYPE_RGB:break;
+    case PNG_COLOR_TYPE_RGB:imagem->super.formato=AT_RGB;imagem->super.componentes = 3;break;
+    case PNG_COLOR_TYPE_RGBA:imagem->super.formato=AT_RGBA;imagem->super.componentes = 4;break;
+    case PNG_COLOR_TYPE_GRAY:imagem->super.formato=AT_GRAYSCALE;imagem->super.componentes = 1;break;
+    case PNG_COLOR_TYPE_GA:imagem->super.formato=AT_GRAYSCALE_ALPHA;imagem->super.componentes = 2;break;
   }
-  bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+  imagem->bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 
-  number_of_passes = png_set_interlace_handling(png_ptr);
+  int number_of_passes = png_set_interlace_handling(png_ptr);
   png_read_update_info(png_ptr, info_ptr);
 
 
   /* read file */
   if (setjmp(png_jmpbuf(png_ptr)))
-          abort_("[read_png_file] Error during read_image");
+    throw(RuntimeException, "[read_png_file] Error during read_image");
 
-  row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * height);
-  for (y=0; y<height; y++)
-          row_pointers[y] = (png_byte*) malloc(png_get_rowbytes(png_ptr,info_ptr));
+  size_t rowBytes = png_get_rowbytes(png_ptr,info_ptr);
+  imagem->super.dados = (png_byte*) malloc(rowBytes * imagem->super.altura);
+  png_bytep* row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * imagem->super.altura);
+
+  int y;
+  for (y=0; y<imagem->super.altura; y++)
+    row_pointers[y] = &imagem->super.dados[y*rowBytes];
+
 
   png_read_image(png_ptr, row_pointers);
 
   fclose(fp);
-
 }
 
 void escreverImagemPNG(ATImagemPNG* imagem)
 {
+  if(imagem->super.largura == 0 ||
+     imagem->super.altura == 0 ||
+     imagem->super.componentes == 0 ||
+     imagem->bit_depth == 0 ||
+     imagem->super.dados == NULL)
+    throw(ATImagemEscreverVazioException, "Imagem vazia");
+
   /* create file */
-  FILE *fp = fopen(file_name, "wb");
+  FILE *fp = fopen(imagem->super.nome, "wb");
   if (!fp)
-    abort_("[write_png_file] File %s could not be opened for writing", file_name);
+  {
+    throw(ATImagemException, "[write_png_file] Arquivo não pode ser aberto para escrita");
+  }
 
 
   /* initialize stuff */
-  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
   if (!png_ptr)
-    abort_("[write_png_file] png_create_write_struct failed");
+    throw(ATImagemException, "[write_png_file] png_create_write_struct failed");
 
-  info_ptr = png_create_info_struct(png_ptr);
+  png_infop info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr)
-    abort_("[write_png_file] png_create_info_struct failed");
+    throw(ATImagemException, "[write_png_file] png_create_info_struct failed");
 
   if (setjmp(png_jmpbuf(png_ptr)))
-    abort_("[write_png_file] Error during init_io");
+    throw(ATImagemException, "[write_png_file] Error during init_io");
 
   png_init_io(png_ptr, fp);
 
 
   /* write header */
   if (setjmp(png_jmpbuf(png_ptr)))
-    abort_("[write_png_file] Error during writing header");
+    throw(ATImagemException, "[write_png_file] Error during writing header");
 
-  png_set_IHDR(png_ptr, info_ptr, width, height,
-               bit_depth, color_type, PNG_INTERLACE_NONE,
+
+  if(imagem->super.componentes == 1) imagem->color_type = PNG_COLOR_TYPE_GRAY;
+  else if(imagem->super.componentes == 2) imagem->color_type = PNG_COLOR_TYPE_GRAY_ALPHA;
+  else if(imagem->super.componentes == 3) imagem->color_type = PNG_COLOR_TYPE_RGB;
+  else if(imagem->super.componentes == 4) imagem->color_type = PNG_COLOR_TYPE_RGBA;
+
+  png_set_IHDR(png_ptr, info_ptr, imagem->super.largura, imagem->super.altura,
+               imagem->bit_depth, imagem->color_type, PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
   png_write_info(png_ptr, info_ptr);
@@ -303,20 +328,27 @@ void escreverImagemPNG(ATImagemPNG* imagem)
 
   /* write bytes */
   if (setjmp(png_jmpbuf(png_ptr)))
-    abort_("[write_png_file] Error during writing bytes");
+    throw(ATImagemException, "[write_png_file] Error during writing bytes");
+
+  png_bytep* row_pointers = (png_bytep*) malloc(sizeof(png_bytep) * imagem->super.altura);
+
+  size_t rowBytes = png_get_rowbytes(png_ptr,info_ptr);
+  int y;
+  for (y=0; y<imagem->super.altura; y++)
+          row_pointers[y] = &imagem->super.dados[y*rowBytes];
 
   png_write_image(png_ptr, row_pointers);
 
-
   /* end write */
   if (setjmp(png_jmpbuf(png_ptr)))
-    abort_("[write_png_file] Error during end of write");
+    throw(ATImagemException, "[write_png_file] Error during end of write");
 
   png_write_end(png_ptr, NULL);
 
   /* cleanup heap allocation */
-  for (y=0; y<height; y++)
-          free(row_pointers[y]);
+  //for (y=0; y<imagem->super.altura; y++)
+  //        free(row_pointers[y]);
+
   free(row_pointers);
 
   fclose(fp);

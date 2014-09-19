@@ -47,8 +47,8 @@ TEST_GROUP_RUNNER(Imagem)
     RUN_TEST_CASE(Imagem, testImagem_PNG_Abrir_Invalido);
     RUN_TEST_CASE(Imagem, testImagem_PNG_Abrir_Valido);
 
-//    RUN_TEST_CASE(Imagem, testImagem_PNG_Escrever_Vazio);
-//    RUN_TEST_CASE(Imagem, testImagem_PNG_Escrever_TamanhoCoresVariadas);
+    RUN_TEST_CASE(Imagem, testImagem_PNG_Escrever_Vazio);
+    RUN_TEST_CASE(Imagem, testImagem_PNG_Escrever_TamanhoCoresVariadas);
 //
 //
 //    RUN_TEST_CASE(Imagem, testImagem_PNG_Converter_GrayScale_Vazio);

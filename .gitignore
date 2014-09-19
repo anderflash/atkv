@@ -28,5 +28,6 @@
 *.x86_64
 *.hex
 
-unity/imagens/*.jpg
-unity/variados/*.jpg
+unity/variados/*.*
+unity/imagens/*.*
+unity/videos/*.*

@@ -22,6 +22,7 @@ SRC_FILES1=\
   testeVideo.c\
   testeCamera.c\
   $(ATKV_SRC)/atimagem.c\
+  $(ATKV_SRC)/atvideo.c\
   #$(UNITY_ROOT)/src/unity.c \
   #$(UNITY_ROOT)/extras/fixture/src/unity_fixture.c \
   #src/ProductionCode.c \
@@ -33,7 +34,7 @@ SRC_FILES1=\
   #test/test_runners/all_tests.c
 INC_DIRS=-I../include -I../lib
 LIB_DIRS=-L../lib
-LIBRARIES=-lunity -lunityfixture -le4c -ljpeg
+LIBRARIES=-lunity -lunityfixture -le4c -ljpeg -lpng -lavcodec
 
 SYMBOLS=-std=c11
 
@@ -56,7 +57,7 @@ clean:
 
 Debug:
 	$(C_COMPILER) -g $(INC_DIRS) $(LIB_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1) $(LIBRARIES)
-	./$(TARGET1)
+	#./$(TARGET1)
 
 Release:
 	$(C_COMPILER) $(INC_DIRS) $(LIB_DIRS) $(SYMBOLS) $(SRC_FILES1) -o $(TARGET1) $(LIBRARIES)
