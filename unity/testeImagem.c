@@ -368,6 +368,10 @@ TEST(Imagem, testImagem_PNG_Abrir_Vazio)
   {
     erroCorreto = 2;
   }
+  catch(RuntimeException)
+  {
+    erroCorreto = 3;
+  }
 
   TEST_ASSERT_EQUAL(1, erroCorreto);
 
@@ -393,6 +397,10 @@ TEST(Imagem, testImagem_PNG_Abrir_Invalido)
   {
     erroCorreto = 1;
   }
+  catch(RuntimeException)
+  {
+    erroCorreto = 2;
+  }
   TEST_ASSERT_EQUAL(1, erroCorreto);
   // Testar se a largura, altura e número de canais continuam sendo 0
   TEST_ASSERT_EQUAL(0, imagempng->super.altura);
@@ -405,16 +413,123 @@ TEST(Imagem, testImagem_PNG_Abrir_Invalido)
 }
 TEST(Imagem, testImagem_PNG_Abrir_Valido)
 {
-  TEST_IGNORE();
+  int erro = 0;
+  ATImagemPNG* imagempng = (ATImagemPNG*) criarImagem("correto.png", AT_PNG);
+  try
+  {
+    printf("\noi\n");
+    lerImagem((ATImagem*) imagempng);
+  }catch(RuntimeException)
+  {
+    erro = 1;
+  }
+  TEST_ASSERT_EQUAL(0, erro);
+  TEST_ASSERT_EQUAL(500, imagempng->super.largura);
+  TEST_ASSERT_EQUAL(500, imagempng->super.altura);
+  TEST_ASSERT_EQUAL(4, imagempng->super.componentes);
+  TEST_ASSERT_EQUAL(AT_RGBA, imagempng->super.formato);
+  TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
+  TEST_ASSERT_EQUAL(8, imagempng->bit_depth);
 }
 
 TEST(Imagem, testImagem_PNG_Escrever_Vazio)
 {
-  TEST_IGNORE();
+  int erro = 0;
+  ATImagemPNG* imagempng = (ATImagemPNG*) criarImagem("vazio.png",AT_PNG);
+  try
+  {
+    escreverImagem((ATImagem*)imagempng);
+  }catch(ATImagemEscreverVazioException)
+  {
+    erro = 1;
+  }
+  TEST_ASSERT_EQUAL(1, erro);
+  TEST_ASSERT_EQUAL(0, imagempng->super.largura);
+  TEST_ASSERT_EQUAL(0, imagempng->super.altura);
+  TEST_ASSERT_EQUAL(0, imagempng->super.componentes);
+  TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
+
+  // Testando se os arquivos estão lá
+  FILE* file = NULL;
+  erro = 0;
+  if(file=fopen("vazio.png","r"))
+  {
+    erro = 1;
+    fclose(file);
+  }
+  TEST_ASSERT_EQUAL(0, erro);
 }
+
 TEST(Imagem, testImagem_PNG_Escrever_TamanhoCoresVariadas)
 {
-  TEST_IGNORE();
+  ATImagemPNG* imagem = (ATImagemPNG*) criarImagem("", AT_PNG);
+  int largura, altura, canais;
+  char nome[50];
+  int erro = 0;
+  int imagensCriadas = 0;
+  for(largura = 128; largura <= 1024; largura+=128)
+  {
+    for(altura = 128; altura <= 1024; altura+=128)
+    {
+      for(canais = 1; canais <= 4; canais++)
+      {
+        sprintf(nome, "variados/%05d%05d%02d.png", largura, altura, canais);
+        try
+        {
+          imagem->super.nome = nome;
+          imagem->super.largura = largura;
+          imagem->super.altura = altura;
+          imagem->super.componentes = canais;
+          imagem->bit_depth = 8;
+
+          if(canais == 1) imagem->super.formato = AT_GRAYSCALE;
+          else if(canais == 2) imagem->super.formato = AT_GRAYSCALE_ALPHA;
+          else if(canais == 3) imagem->super.formato = AT_RGB;
+          else if(canais == 4) imagem->super.formato = AT_RGBA;
+
+          int tamanho = largura * altura * canais;
+          int tamanhoBytes = sizeof(unsigned char) * (size_t)tamanho;
+          imagem->super.dados = (unsigned char*) malloc(tamanhoBytes);
+          int i;
+          for(i = 0; i < tamanho; i++)
+          {
+            imagem->super.dados[i] = rand() % 256;
+          }
+          if(canais == 1) imagem->super.formato = AT_GRAYSCALE;
+          else            imagem->super.formato = AT_YCBCR;
+          escreverImagem((ATImagem*) imagem);
+          imagensCriadas++;
+        }
+        catch(ATImagemEscreverException)
+        {
+          erro++;
+        }
+        free(imagem->super.dados);
+      }
+    }
+  }
+  TEST_ASSERT_EQUAL(0, erro);
+
+  // Testando se os arquivos estão lá
+  FILE* file;
+
+  for(largura = 64; largura <= 1024; largura+=64)
+  {
+    for(altura = 64; altura <= 1024; altura+=64)
+    {
+      for(canais = 1; canais <= 4; canais++)
+      {
+        sprintf(nome, "variados/%05d%05d%02d.png", largura, altura, canais);
+        if(file=fopen(nome,"r"))
+        {
+          fclose(file);
+          imagensCriadas--;
+          remove(nome);
+        }
+      }
+    }
+  }
+  TEST_ASSERT_EQUAL(0, imagensCriadas);
 }
 
 
