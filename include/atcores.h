@@ -1,0 +1,10 @@
+#ifndef ATCORES_H
+#define ATCORES_H
+
+typedef enum {AT_ALFA, AT_PRETOEBRANCO, AT_CINZA, AT_CINZA_ALFA, AT_RGB, AT_CMYK, AT_BGR, AT_YUV, AT_YCBCR, AT_RGBA} ATEspacoCores;
+
+
+
+#endif // ATCORES_H
+
+

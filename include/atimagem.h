@@ -7,6 +7,7 @@
 #include <setjmp.h>
 #include <jpeglib.h>
 #include <png.h>
+#include "atcores.h"
 
 METHODDEF(void)
 my_error_exit (j_common_ptr cinfo);
@@ -20,7 +21,6 @@ E4C_DECLARE_EXCEPTION(ATImagemEscreverVazioException);
 E4C_DECLARE_EXCEPTION(ATImagemConverterException);
 E4C_DECLARE_EXCEPTION(ATImagemNulaException);
 
-typedef enum{AT_CMYK, AT_RGB, AT_RGBA, AT_YCBCR, AT_YUV, AT_GRAYSCALE, AT_GRAYSCALE_ALPHA, AT_ALPHA} ATImagemFormato;
 typedef enum{AT_JPEG, AT_PNG, AT_TIFF} ATImagemTipo;
 
 // PARA O LIBJPEG
@@ -35,7 +35,7 @@ typedef struct
     int largura;
     int altura;
     int componentes;
-    ATImagemFormato formato; // Se é rgb, cmyk, grayscale...
+    ATEspacoCores espacoCores; // Se é rgb, cmyk, grayscale...
     ATImagemTipo    tipo;    // Se é jpeg, tiff, png...
     char* nome;
     unsigned char* dados;

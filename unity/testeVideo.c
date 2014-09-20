@@ -19,12 +19,17 @@ TEST_TEAR_DOWN(Video)
 TEST(Video, testVideo_Abrir_Vazio)
 {
   int erro = 0;
-  ATVideo* video = criarVideo("vazio.avi", AT_AVI);
+  ATVideo* video;
   try
   {
+    video = criarVideo("vazio.avi");
     abrirVideo(video);
   }
   catch(ATVideoAbrirNaoExisteException)
+  {
+    erro = 1;
+  }
+  catch(ATVideoAbrirInvalidoException)
   {
     erro = 1;
   }
@@ -42,9 +47,10 @@ TEST(Video, testVideo_Abrir_Vazio)
 TEST(Video, testVideo_Abrir_Invalido)
 {
   int erro = 0;
-  ATVideo* video = criarVideo("outroobjeto.dat", AT_MPEG);
+  ATVideo* video;
   try
   {
+    video = criarVideo("outroobjeto.dat");
     abrirVideo(video);
   }
   catch(ATVideoAbrirInvalidoException)
@@ -72,16 +78,21 @@ TEST(Video, testVideo_Abrir_Invalido)
 }
 TEST(Video, testVideo_Abrir_Valido)
 {
-  int erro = 0;
-  ATVideo* video = criarVideo("videos/video.mpg", AT_MPEG);
+  int erro = 0;ATVideo* video;
   try
   {
+    video = criarVideo("videos/video.mpg");
     abrirVideo(video);
     TEST_ASSERT_EQUAL(320, video->largura);
     TEST_ASSERT_EQUAL(240, video->altura);
     TEST_ASSERT_EQUAL(3, video->canais);
-    TEST_ASSERT_EQUAL(AT_YUV, video->formato);
+    TEST_ASSERT_EQUAL(AT_RGB, video->espacoCores);
     TEST_ASSERT_EQUAL(AT_MPEG, video->tipo);
+    int i;
+    for(i=0; i < 100; i++)//video->largura * video->altura / 2 * ; i++)
+    {
+      printf("%d ", video->frameBuffer[i]);
+    }
   }
   catch(RuntimeException)
   {
@@ -112,9 +123,47 @@ TEST(Video, testVideo_Gravar_Audio)
 }
 TEST(Video, testVideo_Obter_Quadro)
 {
-  TEST_IGNORE();
+  int erro = 0;
+  ATVideo* video;
+  try
+  {
+    video = criarVideo("videos/video3.3gp");
+    abrirVideo(video);
+    obterQuadro(video);
+  }
+  catch(ATVideoException)
+  {
+    erro = 1;
+  }
+  TEST_ASSERT_EQUAL(0, erro);
+  TEST_ASSERT_EQUAL(640, video->largura);
+  TEST_ASSERT_EQUAL(360, video->altura);
+  TEST_ASSERT_EQUAL(3, video->canais);
+  TEST_ASSERT_EQUAL(AT_RGB, video->espacoCores);
+  TEST_ASSERT_EQUAL(AT_MPEG, video->tipo);
+
 }
 TEST(Video, testVideo_Controlar)
 {
-  TEST_IGNORE();
+  // Abrir o vídeo
+  ATVideo* video = criarVideo("videos/video3.3gp");
+  abrirVideo(video);
+
+  // Tocar
+  tocarVideo(video);
+
+  // Pausar
+  pausarVideo(video);
+
+  // Rebobinar
+  rebobinarVideo(video);
+
+  // Parar (Pausar e Rebobinar)
+  pararVideo(video);
+
+  // Ir para um ponto específico
+  int frame = 200;
+  irParaFrame(video, frame);
+  int64_t timestamp = 3400000;
+  irParaTempo(video, timestamp);
 }

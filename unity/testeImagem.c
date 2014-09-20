@@ -40,7 +40,7 @@ TEST(Imagem, testImagem_JPEG_Abrir_Vazio)
   TEST_ASSERT_EQUAL(0, imagemjpeg->super.altura);
   TEST_ASSERT_EQUAL(0, imagemjpeg->super.largura);
   TEST_ASSERT_EQUAL(0, imagemjpeg->super.componentes);
-  TEST_ASSERT_EQUAL(AT_YCBCR, imagemjpeg->super.formato);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagemjpeg->super.espacoCores);
   TEST_ASSERT_EQUAL(AT_JPEG, imagemjpeg->super.tipo);
 
   destruirImagem((ATImagem*) imagemjpeg);
@@ -63,7 +63,7 @@ TEST(Imagem, testImagem_JPEG_Abrir_Invalido)
   TEST_ASSERT_EQUAL(0, imagemjpeg->super.altura);
   TEST_ASSERT_EQUAL(0, imagemjpeg->super.largura);
   TEST_ASSERT_EQUAL(0, imagemjpeg->super.componentes);
-  TEST_ASSERT_EQUAL(AT_YCBCR, imagemjpeg->super.formato);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagemjpeg->super.espacoCores);
   TEST_ASSERT_EQUAL(AT_JPEG, imagemjpeg->super.tipo);
 
   destruirImagem((ATImagem*) imagemjpeg);
@@ -84,7 +84,7 @@ TEST(Imagem, testImagem_JPEG_Abrir_Valido)
       {
         sprintf(nome, "imagens/%05d%05d%02d.jpg", largura, altura, canais);
         ATImagemJPEG *imagemjpeg = (ATImagemJPEG*) criarImagem(nome, AT_JPEG);
-        if(canais == 1) imagemjpeg->super.formato = AT_GRAYSCALE;
+        if(canais == 1) imagemjpeg->super.espacoCores = AT_CINZA;
         try
         {
           lerImagem((ATImagem*) imagemjpeg);
@@ -96,8 +96,8 @@ TEST(Imagem, testImagem_JPEG_Abrir_Valido)
         TEST_ASSERT_EQUAL(altura, imagemjpeg->super.altura);
         TEST_ASSERT_EQUAL(largura, imagemjpeg->super.largura);
         TEST_ASSERT_EQUAL(canais, imagemjpeg->super.componentes);
-        if(canais == 3) TEST_ASSERT_EQUAL(AT_YCBCR, imagemjpeg->super.formato);
-        else      TEST_ASSERT_EQUAL(AT_GRAYSCALE, imagemjpeg->super.formato);
+        if(canais == 3) TEST_ASSERT_EQUAL(AT_YCBCR, imagemjpeg->super.espacoCores);
+        else      TEST_ASSERT_EQUAL(AT_CINZA, imagemjpeg->super.espacoCores);
         TEST_ASSERT_EQUAL(AT_JPEG, imagemjpeg->super.tipo);
         destruirImagem((ATImagem*) imagemjpeg);
       }
@@ -152,8 +152,8 @@ TEST(Imagem, testImagem_JPEG_Escrever_TamanhoCoresVariadas)
           {
             imagem->super.dados[i] = rand() % 256;
           }
-          if(canais == 1) imagem->super.formato = AT_GRAYSCALE;
-          else            imagem->super.formato = AT_YCBCR;
+          if(canais == 1) imagem->super.espacoCores = AT_CINZA;
+          else            imagem->super.espacoCores = AT_YCBCR;
           escreverImagem((ATImagem*) imagem);
           imagensCriadas++;
         }
@@ -224,7 +224,7 @@ TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Vazio)
 
   // Converter Grayscale em outro espaço (não dá para inferir as cores)
   erroCorreto = 0;
-  imagem->super.formato = AT_GRAYSCALE;
+  imagem->super.espacoCores = AT_CINZA;
   imagem->super.componentes = 1;
   imagem->super.largura = 1;
   imagem->super.altura = 1;
@@ -244,9 +244,9 @@ TEST(Imagem, testImagem_JPEG_Converter_GrayScale_Correto)
   TEST_IGNORE();
   // Converter de CMYK para Grayscale
 //  ATImagemJPEG* imagemEntrada = (ATImagemJPEG*) criarImagem("cmyk.jpg"   , AT_JPEG);
-//  imagemEntrada->super.formato = AT_CMYK;
+//  imagemEntrada->super.espacoCores = AT_CMYK;
 //  ATImagemJPEG* imagemSaida = (ATImagemJPEG*) criarImagem("grayscale.jpg", AT_JPEG);
-//  imagemSaida->super.formato = AT_GRAYSCALE;
+//  imagemSaida->super.espacoCores = AT_CINZA;
 //
 //  lerImagem((ATImagem*)imagemEntrada);
 //  converterImagem((ATImagem*)imagemEntrada, (ATImagem*)imagemSaida);
@@ -379,7 +379,7 @@ TEST(Imagem, testImagem_PNG_Abrir_Vazio)
   TEST_ASSERT_EQUAL(0, imagempng->super.altura);
   TEST_ASSERT_EQUAL(0, imagempng->super.largura);
   TEST_ASSERT_EQUAL(0, imagempng->super.componentes);
-  TEST_ASSERT_EQUAL(AT_YCBCR, imagempng->super.formato);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagempng->super.espacoCores);
   TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
 
   destruirImagem((ATImagem*) imagempng);
@@ -406,7 +406,7 @@ TEST(Imagem, testImagem_PNG_Abrir_Invalido)
   TEST_ASSERT_EQUAL(0, imagempng->super.altura);
   TEST_ASSERT_EQUAL(0, imagempng->super.largura);
   TEST_ASSERT_EQUAL(0, imagempng->super.componentes);
-  TEST_ASSERT_EQUAL(AT_YCBCR, imagempng->super.formato);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagempng->super.espacoCores);
   TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
 
   destruirImagem((ATImagem*) imagempng);
@@ -427,7 +427,7 @@ TEST(Imagem, testImagem_PNG_Abrir_Valido)
   TEST_ASSERT_EQUAL(500, imagempng->super.largura);
   TEST_ASSERT_EQUAL(500, imagempng->super.altura);
   TEST_ASSERT_EQUAL(4, imagempng->super.componentes);
-  TEST_ASSERT_EQUAL(AT_RGBA, imagempng->super.formato);
+  TEST_ASSERT_EQUAL(AT_RGBA, imagempng->super.espacoCores);
   TEST_ASSERT_EQUAL(AT_PNG, imagempng->super.tipo);
   TEST_ASSERT_EQUAL(8, imagempng->bit_depth);
 }
@@ -482,10 +482,10 @@ TEST(Imagem, testImagem_PNG_Escrever_TamanhoCoresVariadas)
           imagem->super.componentes = canais;
           imagem->bit_depth = 8;
 
-          if(canais == 1) imagem->super.formato = AT_GRAYSCALE;
-          else if(canais == 2) imagem->super.formato = AT_GRAYSCALE_ALPHA;
-          else if(canais == 3) imagem->super.formato = AT_RGB;
-          else if(canais == 4) imagem->super.formato = AT_RGBA;
+          if(canais == 1) imagem->super.espacoCores = AT_CINZA;
+          else if(canais == 2) imagem->super.espacoCores = AT_CINZA_ALFA;
+          else if(canais == 3) imagem->super.espacoCores = AT_RGB;
+          else if(canais == 4) imagem->super.espacoCores = AT_RGBA;
 
           int tamanho = largura * altura * canais;
           int tamanhoBytes = sizeof(unsigned char) * (size_t)tamanho;
@@ -495,8 +495,8 @@ TEST(Imagem, testImagem_PNG_Escrever_TamanhoCoresVariadas)
           {
             imagem->super.dados[i] = rand() % 256;
           }
-          if(canais == 1) imagem->super.formato = AT_GRAYSCALE;
-          else            imagem->super.formato = AT_YCBCR;
+          if(canais == 1) imagem->super.espacoCores = AT_CINZA;
+          else            imagem->super.espacoCores = AT_YCBCR;
           escreverImagem((ATImagem*) imagem);
           imagensCriadas++;
         }
@@ -656,7 +656,7 @@ TEST(Imagem, testImagem_TIFF_Abrir_Vazio)
   TEST_ASSERT_EQUAL(0, imagemtiff->super.altura);
   TEST_ASSERT_EQUAL(0, imagemtiff->super.largura);
   TEST_ASSERT_EQUAL(0, imagemtiff->super.componentes);
-  TEST_ASSERT_EQUAL(AT_YCBCR, imagemtiff->super.formato);
+  TEST_ASSERT_EQUAL(AT_YCBCR, imagemtiff->super.espacoCores);
   TEST_ASSERT_EQUAL(AT_JPEG, imagemtiff->super.tipo);
 
   destruirImagem((ATImagem*) imagemtiff);

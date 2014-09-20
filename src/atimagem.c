@@ -35,7 +35,7 @@ ATImagem* criarImagem(const char* nome, ATImagemTipo tipo)
     imagem->largura = 0;
     imagem->componentes = 0;
     imagem->dados = NULL;
-    imagem->formato = AT_YCBCR;
+    imagem->espacoCores = AT_YCBCR;
     return imagem;
 }
 
@@ -108,11 +108,11 @@ void lerImagemJPEG(ATImagemJPEG* imagem)
 
 	// Passo 4: colocar parâmetros de descompressão
 	// Nesse caso não faremos nada
-	switch(imagem->super.formato)
+	switch(imagem->super.espacoCores)
 	{
 	    case AT_YCBCR: cinfo.out_color_space = JCS_YCbCr; break;
         case AT_RGB: cinfo.out_color_space = JCS_RGB; break;
-        case AT_GRAYSCALE: cinfo.out_color_space = JCS_GRAYSCALE; break;
+        case AT_CINZA: cinfo.out_color_space = JCS_GRAYSCALE; break;
         case AT_CMYK: cinfo.out_color_space = JCS_CMYK; break;
         default:break;
 	}
@@ -206,7 +206,7 @@ void converterImagemJPEG(ATImagemJPEG* imagemEntrada, ATImagemJPEG* imagemSaida)
   if(imagemEntrada->super.componentes == 0 ||
      imagemEntrada->super.largura == 0 ||
      imagemEntrada->super.altura == 0) throw(ATImagemConverterException, "Não pode converter uma imagem vazia.");
-  if(imagemEntrada->super.formato == AT_GRAYSCALE) throw(ATImagemConverterException, "Não pode converter grayscale em outro espaço de cores.");
+  if(imagemEntrada->super.espacoCores == AT_CINZA) throw(ATImagemConverterException, "Não pode converter grayscale em outro espaço de cores.");
 }
 
 void lerImagemPNG(ATImagemPNG* imagem)
@@ -247,10 +247,10 @@ void lerImagemPNG(ATImagemPNG* imagem)
   imagem->color_type = png_get_color_type(png_ptr, info_ptr);
   switch(imagem->color_type)
   {
-    case PNG_COLOR_TYPE_RGB:imagem->super.formato=AT_RGB;imagem->super.componentes = 3;break;
-    case PNG_COLOR_TYPE_RGBA:imagem->super.formato=AT_RGBA;imagem->super.componentes = 4;break;
-    case PNG_COLOR_TYPE_GRAY:imagem->super.formato=AT_GRAYSCALE;imagem->super.componentes = 1;break;
-    case PNG_COLOR_TYPE_GA:imagem->super.formato=AT_GRAYSCALE_ALPHA;imagem->super.componentes = 2;break;
+    case PNG_COLOR_TYPE_RGB:imagem->super.espacoCores=AT_RGB;imagem->super.componentes = 3;break;
+    case PNG_COLOR_TYPE_RGBA:imagem->super.espacoCores=AT_RGBA;imagem->super.componentes = 4;break;
+    case PNG_COLOR_TYPE_GRAY:imagem->super.espacoCores=AT_CINZA;imagem->super.componentes = 1;break;
+    case PNG_COLOR_TYPE_GA:imagem->super.espacoCores=AT_CINZA_ALFA;imagem->super.componentes = 2;break;
   }
   imagem->bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 

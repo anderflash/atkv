@@ -23,6 +23,7 @@ SRC_FILES1=\
   testeCamera.c\
   $(ATKV_SRC)/atimagem.c\
   $(ATKV_SRC)/atvideo.c\
+  $(ATKV_SRC)/atcamera.c\
   #$(UNITY_ROOT)/src/unity.c \
   #$(UNITY_ROOT)/extras/fixture/src/unity_fixture.c \
   #src/ProductionCode.c \
@@ -34,7 +35,7 @@ SRC_FILES1=\
   #test/test_runners/all_tests.c
 INC_DIRS=-I../include -I../lib
 LIB_DIRS=-L../lib
-LIBRARIES=-lunity -lunityfixture -le4c -ljpeg -lpng -lavcodec -lavformat -lavutil
+LIBRARIES=-lunity -lunityfixture -le4c -ljpeg -lpng -lavcodec -lavformat -lavutil -lswscale
 
 SYMBOLS=-std=c11
 

@@ -43,8 +43,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/atcamera.h" />
+		<Unit filename="include/atcores.h" />
 		<Unit filename="include/atimagem.h" />
 		<Unit filename="include/atvideo.h" />
+		<Unit filename="src/atcamera.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/atimagem.c">
 			<Option compilerVar="CC" />
 		</Unit>
