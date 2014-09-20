@@ -9,6 +9,11 @@
 #include <png.h>
 #include "atcores.h"
 
+#ifdef __cplusplus
+namespace at{
+extern "C"{
+#endif
+
 METHODDEF(void)
 my_error_exit (j_common_ptr cinfo);
 
@@ -77,4 +82,7 @@ void escreverImagemPNG(ATImagemPNG* imagem);
 void lerImagemTIFF(ATImagemTIFF* imagem);
 void escreverImagemTIFF(ATImagemTIFF* imagem);
 
+#ifdef __cplusplus
+}}
+#endif
 #endif // ATIMAGEM_H

@@ -37,7 +37,7 @@ INC_DIRS=-I../include -I../lib
 LIB_DIRS=-L../lib
 LIBRARIES=-lunity -lunityfixture -le4c -ljpeg -lpng -lavcodec -lavformat -lavutil -lswscale
 
-SYMBOLS=-std=c11
+SYMBOLS=-std=c11 -pg
 
 ifeq ($(OS),Windows_NT)
 	CLEANUP = del /F /Q $(TARGET1)

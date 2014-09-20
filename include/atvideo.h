@@ -10,6 +10,10 @@
 #define INBUF_SIZE 4096
 #define AUDIO_INBUF_SIZE 20480
 #define AUDIO_REFILL_THRESH 4096
+#ifdef __cplusplus
+namespace at{
+extern "C"{
+#endif
 
 E4C_DECLARE_EXCEPTION(ATVideoException);
 E4C_DECLARE_EXCEPTION(ATVideoNaoExisteException);
@@ -68,5 +72,8 @@ void pararVideo(ATVideo* video);
 void irParaTempo(ATVideo *video, int64_t timestamp);
 void irParaFrame(ATVideo* video, int frame);
 
+#ifdef __cplusplus
+}}
+#endif
 #endif // ATVIDEO_H
 

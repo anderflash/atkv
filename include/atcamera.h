@@ -19,6 +19,11 @@
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
+#ifdef __cplusplus
+namespace at{
+extern "C"{
+#endif
+
 E4C_DECLARE_EXCEPTION(ATCameraException);
 E4C_DECLARE_EXCEPTION(ATCameraAbrirException);
 E4C_DECLARE_EXCEPTION(ATCameraAbrirNaoEhV4LException);
@@ -48,6 +53,8 @@ void abrirCamera(char* nome, int largura, int altura, ATEspacoCores espacoCores,
 void fecharCamera(ATCamera* camera);
 void atualizarQuadro(ATCamera* camera);
 void destruirCamera(ATCamera* camera);
-
+#ifdef __cplusplus
+}}
+#endif
 
 #endif // ATCAMERA_H

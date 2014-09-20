@@ -40,12 +40,14 @@ TEST(Camera, testCamera_Abrir_Invalido)
 TEST(Camera, testCamera_Abrir_Valido)
 {
   int erro = 0;
+  int largura = 1280;
+  int altura = 720;
   ATCamera* camera;
   try
   {
-    abrirCamera("/dev/video0",0,0,AT_RGB,&camera);
-    TEST_ASSERT_EQUAL(640, camera->largura);
-    TEST_ASSERT_EQUAL(480, camera->altura);
+    abrirCamera("/dev/video0",largura,altura,AT_RGB,&camera);
+    TEST_ASSERT_EQUAL(largura, camera->largura);
+    TEST_ASSERT_EQUAL(altura, camera->altura);
     fecharCamera(camera);
     destruirCamera(camera);
   }
@@ -64,11 +66,13 @@ TEST(Camera, testImagem_Obter_Frame)
 {
   int erro = 0;
   ATCamera* camera;
+  int largura = 640;
+  int altura = 480;
   try
   {
-    abrirCamera("/dev/video0",640,480,AT_CINZA, &camera);
-    TEST_ASSERT_EQUAL(640, camera->largura);
-    TEST_ASSERT_EQUAL(480, camera->altura);
+    abrirCamera("/dev/video1",largura,altura,AT_CINZA, &camera);
+    TEST_ASSERT_EQUAL(largura, camera->largura);
+    TEST_ASSERT_EQUAL(altura, camera->altura);
     atualizarQuadro(camera);
     fecharCamera(camera);
     destruirCamera(camera);
